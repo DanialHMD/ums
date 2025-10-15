@@ -1,13 +1,14 @@
 from fastapi import HTTPException
+from typing import Any, Dict
 
-from .security import Security
+from .engine import Engine 
+# from .security import Security
 from ..orm.user import User
-from .engine import get_db
 
 class UserManager:
     def __init__(self) -> None:
-        self.db = get_db()
-        self.security = Security()
+        pass
+        # security = Security()
 
     def create_user(self, email: str, password: str, first_name: str, last_name: str) -> User:
         hashed_pw = password
@@ -18,9 +19,10 @@ class UserManager:
             first_name=first_name,
             last_name=last_name
         )
-        self.db.add(new_user)
-        self.db.commit()
-        self.db.refresh(new_user)
+        with Engine().get_db() as self.db:
+            self.db.add(new_user)
+            self.db.commit()
+            self.db.refresh(new_user)
         return new_user
 
     def get_user(self, user_id: int) -> User:
@@ -30,8 +32,8 @@ class UserManager:
             raise HTTPException(status_code=404, detail="User not found")
 
         return user
-
-    def update_user(self, user_id: int, user_data: dict):
+    
+    def update_user(self, user_id: int, user_data: Dict[str, Any]) -> None:
         user = self.db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
@@ -41,7 +43,6 @@ class UserManager:
 
         self.db.commit()
         self.db.refresh(user)
-        return user
 
     def delete_user(self, user_id: int) -> None:
         user = self.db.query(User).filter(User.id == user_id).first()

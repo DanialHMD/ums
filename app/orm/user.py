@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from .base import Base
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class User(Base):
@@ -12,6 +12,6 @@ class User(Base):
     hashed_password: Mapped[str]
     first_name: Mapped[Optional[str]]
     last_name: Mapped[Optional[str]]
-    is_active: Mapped[bool] = True
+    is_active: Mapped[bool]
     created_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    updated_at: Mapped[Optional[datetime]] = None
+    updated_at: Mapped[Optional[datetime]]
