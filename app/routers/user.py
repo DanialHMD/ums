@@ -1,5 +1,5 @@
-from ..models.user_model import UserCreate, UserUpdate, UserOut
-from ..core.user_management import UserManager
+from ..models.user import UserCreate, UserUpdate, UserOut
+from ..core.usermanager import UserManager
 
 from fastapi import APIRouter, status
 
