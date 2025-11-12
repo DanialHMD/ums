@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
-from database import engine
-from models import Course
+from app.models.database import engine
+from app.models.models import Course
 
 router = APIRouter(prefix="/courses", tags=["courses"])
 

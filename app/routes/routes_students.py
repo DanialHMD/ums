@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from database import engine
-from models import Student
+from app.models.database import engine
+from app.models.models import Student
 
 router = APIRouter(prefix="/students", tags=["students"])
 

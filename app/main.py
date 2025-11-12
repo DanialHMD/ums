@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from database import create_db_and_tables
+from app.models.database import create_db_and_tables
 from routes_courses import router as courses_router
 from routes_enrollments import router as enrollments_router
 from routes_students import router as students_router

@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from sqlmodel import Session, SQLModel, create_engine
 
-from models import Course, Enrollment, Student, User
+from app.models.models import Course, Enrollment, Student, User
 
 load_dotenv()
 
