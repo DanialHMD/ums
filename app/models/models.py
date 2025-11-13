@@ -7,7 +7,7 @@ class Role(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
 
-    user: Optional["User"] = Relationship(back_populates="roles")
+    users: List["User"] = Relationship(back_populates="role")
 
 class Enrollment(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -24,6 +24,10 @@ class Student(SQLModel, table=True):
     student_id: str = Field(index=True, unique=True)
     first_name: str
     last_name: str
+    email: str
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    address: Optional[str] = None
     department: str
     entry_year: int
 
@@ -44,6 +48,7 @@ class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(unique=True, index=True)
     hashed_password: str
+    hashed_salt: str
     
-    roles: str = Field(foreign_key="role.id")  # could be "student", "instructor", "admin"
-
+    role_id: Optional[int] = Field(default=None, foreign_key="role.id")
+    role: Optional["Role"] = Relationship(back_populates="users")

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.models.database import engine
-from app.models.models import Course, Enrollment, Student
+from models.database import engine
+from models.models import Course, Enrollment, Student
 
 router = APIRouter(prefix="/enrollments", tags=["enrollments"])
 
