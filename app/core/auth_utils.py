@@ -4,11 +4,10 @@ from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
-from sqlalchemy.orm import Session
-
 from models.database import get_db
 from models.models import User
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -48,3 +47,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+def required_role(*role: str):
+    def role_checker(current_user: User = Depends(get_current_user)):
+        if current_user.role.name not in role:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Operation not permitted"
+            )
+        return current_user
+    return role_checker

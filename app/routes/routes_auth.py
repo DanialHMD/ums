@@ -27,5 +27,5 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     
-    access_token = create_access_token(data={"sub": user.username})
+    access_token = create_access_token(data={"sub": user.username, "role_id": user.role.name})
     return {"access_token": access_token, "token_type": "bearer"}

@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
+from app.core.auth_utils import required_role
 from models.database import engine
-from models.models import Student
+from models.models import Student, User
 
 router = APIRouter(prefix="/students", tags=["students"])
 
@@ -11,14 +12,14 @@ def get_session():
         yield session
 
 @router.post("/")
-def create_student(student: Student, session: Session = Depends(get_session)):
+def create_student(student: Student, session: Session = Depends(get_session), current_user: User = Depends(required_role("admin", "staff", "system"))):
     session.add(student)
     session.commit()
     session.refresh(student)
     return student
 
 @router.put("/{student_id}")
-def update_student(student_id: int, updated_student: Student, session: Session = Depends(get_session)):
+def update_student(student_id: int, updated_student: Student, session: Session = Depends(get_session), current_user: User = Depends(required_role("admin", "staff", "system"))):
     student = session.get(Student, student_id)
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
@@ -31,7 +32,7 @@ def update_student(student_id: int, updated_student: Student, session: Session =
     return student
 
 @router.delete("/{student_id}")
-def delete_student(student_id: int, session: Session = Depends(get_session)):
+def delete_student(student_id: int, session: Session = Depends(get_session), current_user: User = Depends(required_role("admin", "staff", "system"))):
     student = session.get(Student, student_id)
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
@@ -45,7 +46,7 @@ def list_students(session: Session = Depends(get_session)):
     return students
 
 @router.get("/{student_id}/courses")
-def get_student_courses(student_id: int, session: Session = Depends(get_session)):
+def get_student_courses(student_id: int, session: Session = Depends(get_session), current_user: User = Depends(required_role("admin", "staff", "system"))):
     student = session.get(Student, student_id)
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
@@ -72,7 +73,7 @@ def get_student_gpa(student_id: int, session: Session = Depends(get_session)):
     total_credits = 0
     for e in valid:
         total_points += e.course.credits * e.grade
-        total_credits += e.course.credits
+    total_credits += e.course.credits
 
     gpa = total_points / total_credits
     return {

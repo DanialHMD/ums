@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-from passlib.hash import bcrypt
 from sqlmodel import Field, Relationship, SQLModel
 
 class Role(SQLModel, table=True):
@@ -49,6 +48,6 @@ class User(SQLModel, table=True):
     username: str = Field(unique=True, index=True)
     hashed_password: str
     hashed_salt: str
-    
     role_id: Optional[int] = Field(default=None, foreign_key="role.id")
+    
     role: Optional["Role"] = Relationship(back_populates="users")
