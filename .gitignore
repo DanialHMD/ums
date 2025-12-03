@@ -1,5 +1,7 @@
-environment
-__pycache__/
 .env
-.vscode
-test.py
+environment/
+env/
+.venv/
+.vscode/
+__pycache__/
+*.pyc
