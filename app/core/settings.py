@@ -1,8 +1,9 @@
-from typing import List, Optional
+import os
+import secrets
+from typing import List
+
 from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings
-import secrets
-import os
 
 class Settings(BaseSettings):
     # App
@@ -21,7 +22,7 @@ class Settings(BaseSettings):
     BCRYPT_ROUNDS: int = int(os.getenv("BCRYPT_ROUNDS"))
 
     # Redis (optional) - for refresh tokens / token blacklist / rate limiting
-    REDIS_URL: Optional[str] = None
+    REDIS_URL: str = os.getenv("REDIS_URL")
 
     # CORS
     CORS_ORIGINS: List[str] | None = None

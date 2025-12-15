@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session
 from core.auth_utils import required_role
 
-from models.database import engine
+from models.database import get_db
 from models.models import User, Role
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -12,7 +12,7 @@ def read_current_user(current_user: User = Depends(required_role("admin", "staff
     return current_user
 
 @router.patch("/me/password")
-def change_password(new_password: str, current_user: User = Depends(required_role("admin", "staff", "system", "student")), db: Session = Depends(lambda: Session(engine))):
+def change_password(new_password: str, current_user: User = Depends(required_role("admin", "staff", "system", "student")), db: Session = Depends(get_db)):
     from core.auth_utils import hash_password
     current_user.hashed_password = hash_password(new_password)
     db.add(current_user)
@@ -21,7 +21,7 @@ def change_password(new_password: str, current_user: User = Depends(required_rol
     return {"msg": "Password updated successfully"}
 
 @router.get("/{user_id}")
-def get_user_by_id(user_id: int, db: Session = Depends(lambda: Session(engine)), current_user: User = Depends(required_role("admin", "staff", "system"))):
+def get_user_by_id(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(required_role("admin", "staff", "system"))):
     user = db.get(User, user_id)
     if not user:
         from fastapi import HTTPException
@@ -38,7 +38,7 @@ def delete_user():
 
 
 @router.delete("/{user_id}/roles")
-def delete_role(user_id: int, session: Session = Depends(lambda: Session(engine)), current_user: User = Depends(required_role("admin", "system"))):
+def delete_role(user_id: int, session: Session = Depends(get_db), current_user: User = Depends(required_role("admin", "system"))):
     role = session.get(Role, user_id)
     if not role:
         return {"error": "Role not found"}

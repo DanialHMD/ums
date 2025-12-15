@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from models.database import engine
+from models.database import get_db 
 from models.models import Course, Enrollment, Student
 
 router = APIRouter(prefix="/enrollments", tags=["enrollments"])
 
 @router.post("/")
-def enroll_student(student_id: int, course_id: int, db: Session = Depends(lambda: Session(engine))):
+def enroll_student(student_id: int, course_id: int, db: Session = Depends(get_db)):
     student = db.get(Student, student_id)
     course = db.get(Course, course_id)
     if not student or not course:
@@ -20,19 +20,19 @@ def enroll_student(student_id: int, course_id: int, db: Session = Depends(lambda
     return enrollment
 
 @router.get("/")
-def list_enrollments(db: Session = Depends(lambda: Session(engine))):
+def list_enrollments(db: Session = Depends(get_db)):
     enrollments = db.exec(select(Enrollment)).all()
     return enrollments
 
 @router.get("/{id}")
-def get_enrollment_by_id(id: int, db: Session = Depends(lambda: Session(engine))):
+def get_enrollment_by_id(id: int, db: Session = Depends(get_db)):
     enrollment = db.get(Enrollment, id)
     if not enrollment:
         raise HTTPException(status_code=404, detail="Enrollment not found")
     return enrollment
 
 @router.patch("/{id}")
-def update_enrollment(id: int, enrollment_data: Enrollment, db: Session = Depends(lambda: Session(engine))):
+def update_enrollment(id: int, enrollment_data: Enrollment, db: Session = Depends(get_db)):
     enrollment = db.get(Enrollment, id)
     if not enrollment:
         raise HTTPException(status_code=404, detail="Enrollment not found")
@@ -46,7 +46,7 @@ def update_enrollment(id: int, enrollment_data: Enrollment, db: Session = Depend
     return enrollment
 
 @router.delete("/{id}")
-def delete_enrollment(id: int, db: Session = Depends(lambda: Session(engine))):
+def delete_enrollment(id: int, db: Session = Depends(get_db)):
     enrollment = db.get(Enrollment, id)
     if not enrollment:
         raise HTTPException(status_code=404, detail="Enrollment not found")
@@ -56,7 +56,7 @@ def delete_enrollment(id: int, db: Session = Depends(lambda: Session(engine))):
     return {"message": "Enrollment deleted successfully"}
 
 @router.post("/batch")
-def batch_enroll(student_ids: list[int], course_id: int, db: Session = Depends(lambda: Session(engine))):
+def batch_enroll(student_ids: list[int], course_id: int, db: Session = Depends(get_db)):
     course = db.get(Course, course_id)
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
